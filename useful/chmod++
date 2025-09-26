@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo -e "\033[1;31mWarning:\033[0m"
+echo "Are you sure you want to make every .sh file in CURRENT directory executable? (Y/N)"
+read -r opti
+if [[ "$opti" =~ ^([yY]|yes|YES)$ ]]; then
+  shopt -s nullglob
+  files=(*.sh)
+  shopt -u nullglob
+
+  if ((${#files[@]} == 0)); then
+    echo "No .sh files found in pwd."
+    exit 0
+  fi
+
+  echo "Making the following files executable:"
+  printf '%s\n' "${files[@]}"
+
+  chmod +x -- "${files[@]}"
+  echo "Done."
+else
+  echo "Cancel."
+fi
