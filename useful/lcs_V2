@@ -1,0 +1,75 @@
+#!/bin/bash
+source "$HOME/.bashrc" 2>/dev/null
+GREEN="\033[1;32m"
+YELLOW="\033[1;33m"
+BLUE="\033[1;34m"
+RESET="\033[0m"
+echo
+echo -e "\033[37;1mCustom Things In Path:${RESET}"
+echo
+echo -e "${GREEN}\033[4mScripts:${RESET}"
+IFS=':'
+
+# Scripts
+for dir in ~/bin; do
+  [ -d "$dir" ] || continue
+  find "$dir" -maxdepth 1 -type f -executable -exec basename {} \; | while read script; do
+    echo -e "${GREEN}${script}${RESET}"
+  done
+done | sort | uniq
+
+echo -e "\n${YELLOW}\033[4mAliases:${RESET}"
+
+extract_aliases() {
+  local files=(
+    "$HOME/.bashrc"
+    "$HOME/.bash_aliases"
+    "$HOME/.bash_profile"
+    "$HOME/.profile"
+    "/etc/bash.bashrc"
+    "/etc/profile"
+    "/etc/profile.d/*"
+  )
+
+  for file in "${files[@]}"; do
+    if [[ -f "$file" ]] || compgen -G "$file" >/dev/null 2>&1; then
+      grep -h '^alias ' "$file" 2>/dev/null |
+        while read line; do
+          alias_name=$(echo "$line" | sed 's/^alias //' | cut -d'=' -f1)
+          comment=$(echo "$line" | grep -o '#.*$' | sed 's/^# *//')
+
+          if [[ -n "$comment" ]]; then
+            echo -e "${YELLOW}${alias_name}${RESET}     # ${comment}"
+          else
+            echo -e "${YELLOW}${alias_name}${RESET}"
+          fi
+        done
+    fi
+  done
+}
+
+extract_aliases
+
+echo -e "\n${BLUE}\033[4mFunctions:${RESET}"
+
+extract_functions() {
+  local files=(
+    "$HOME/.bashrc"
+    "$HOME/.bash_aliases"
+    "$HOME/.bash_profile"
+    "$HOME/.profile"
+  )
+
+  for file in "${files[@]}"; do
+    if [[ -f "$file" ]]; then
+      grep -oP '^s*function\s+\K\w+' "$file" 2>/dev/null | while read func; do
+      echo -e "${BLUE}${func}${RESET}"
+    done
+  fi
+done
+}
+
+extract_functions
+# EXIT
+echo
+exit 0
