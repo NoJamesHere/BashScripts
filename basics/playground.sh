@@ -5,7 +5,17 @@ echo {1..5} "<-- echo {1..5}"
 read -p "First number: " a
 read -p "Second number: " b
 
-
+COLOR="\033[37;46;1m"
+RESET="\033[0m"
 echo
-echo {${a}..${b}}
-seq $a $b
+if [ $a -ge $b ]; then
+  seq $b $a
+  string="$b $a"
+else
+  seq $a $b
+  string="$a $b"
+fi
+
+echo -e "${COLOR}^ seq $string ^${RESET}"
+
+exit 0
