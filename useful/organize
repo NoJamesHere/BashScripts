@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# docs=("txt" "pdf" "md")
+# scripts=("sh" "py" "cpp" "js" "c" "asm")
+# audio=("mp3" "wav")
+# video=("mp4" "mkv")
+
+declare -A file_struct
+
+i=0
+
+directory=$PWD
+
+mkdir -p Documents
+mkdir -p Scripts
+mkdir -p Audio
+mkdir -p Video
+mkdir -p Others
+
+# warning
+echo -e "\033[1;31mWarning:\033[0m"
+echo "Are you sure you want to organize all files in this CURRENT directory? (Y/N)"
+echo -e "\033[35;1m($directory)\033[0m\033[1;33m"
+read -r opti
+
+# confirmation
+if [[ "$opti" =~ ^([yY]|yes|YES)$ ]]; then
+echo -e "\033[0mOK."
+
+for file in *; do
+  [[ -d "$file" ]] && continue
+  [[ "$file" =~ (Documents|Scripts|Audio|Video|Others)$ ]] && continue
+  
+
+  file_struct["file$i"]="$file"
+
+  if [[ "$file" != *.* ]]; then
+    echo "$file -> No extension"
+    mv -n -- "$file" "Others/$file"
+    ((i++))
+    continue
+  fi
+  ext="${file##*.}"
+  ext="${ext,,}"
+  case "$ext" in
+    txt|pdf|md)
+      echo "$file -> Docs"
+      mv -n -- "$file" "Documents/$file";;
+    sh|py|cpp|js|c|asm)
+      echo "$file -> Scripts"
+      mv -n -- "$file" "Scripts/$file";;
+    mp3|wav)
+      echo "$file -> Audio"
+      mv -n -- "$file" "Audio/$file";;
+    mp4|mkv)
+      echo "$file -> Video"
+      mv -n -- "$file" "Video/$file";;
+    *)
+      echo "$file -> Unknown"
+      mv -n -- "$file" "Others/$file";;
+  esac
+
+  ((i++))
+done
+else
+  echo -e "\033[0mCancelled c:"
+  exit 0
+fi
+
+if [[ $i -eq 0 ]]; then
+  echo "Nothing to organize :P"
+else
+  echo -e "\nOrganized a total of ${i} files"
+  echo "Summary:"
+  echo -e "\033[33;1m  Documents: $(ls -1 Documents | wc -l)\033[0m"
+  echo -e "\033[32;1m  Scripts: $(ls -1 Scripts | wc -l)\033[0m"
+  echo -e "\033[35;1m  Audio: $(ls -1 Audio | wc -l)\033[0m"
+  echo -e "\033[36;1m  Video: $(ls -1 Video | wc -l)\033[0m"
+  echo -e "\033[37;1m  Others: $(ls -1 Others | wc -l)\033[0m"
+fi
+
+exit 0
