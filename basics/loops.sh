@@ -9,6 +9,7 @@ if [[ $# -lt 1 ]]; then
   echo -e "<2>: While loop"
   echo -e "<3>: For loop (.txt files)"
   echo -e "<4>: Step by step summation tracker"
+  echo -e "<5>: Color gradient"
   echo -e "\033[0m"
   exit 1
 fi
