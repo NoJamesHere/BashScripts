@@ -86,46 +86,48 @@ echo; echo "B++ ; B:${numB}"                                 # $(() : be 3 inste
 
 dir=testfiles
 file=${dir}/testFile.txt
-content=$(cat "$file" 2>/dev/null)
+content=$(cat "$file" 2>/dev/null)  # 2> = Redirect errors. /dev/null being, the void, or something, i don't know. /dev/null = NULL OUTPUT maybe.
 str1=Hello
 str2=hello
 strEMPTY=""
-echo; echo -e "${HEADER} How to use -d \$dir ${RESET}"; echo
-if [[ -d $dir ]]; then
-  echo "found $dir"
-fi
 
-echo; echo -e  "${HEADER} How to use -f \$file.${RESET}"; echo
-if [[ -f $file ]]; then
-  echo "${file}: ${content}"
-fi
+echo; echo -e "${HEADER} How to use -d \$dir ${RESET}"; echo  # --- -d ---
+if [[ -d $dir ]]; then                                        # -d : Used for finding directories. Example is $dir (the testfiles folder).
+  echo "found $dir"                                           # -d : When bash finds it, it prints "found testfiles".
+fi                                                            # -d : Otherwise it will just, well, do nothing.
 
-echo; echo -e "${HEADER} Using a loop for listing md files.${RESET}"; echo
+echo; echo -e  "${HEADER} How to use -f \$file.${RESET}"; echo   # --- -f ---
+if [[ -f $file ]]; then                                          # -f : Used for finding files. Exammple $file (the testFile.txt folder inside $dir).
+  echo "${file}: ${content}"                                     # -f : When bash finds it, it will print the content of $file.
+fi                                                               # -f : Otherwise just pretend like nothing happened.
 
-shopt -s nullglob
-for file in "$dir"/*.md; do
-  echo "Found: $file"
-done
-shopt -u nullglob
+echo; echo -e "${HEADER} Using a loop for listing md files.${RESET}"; echo   # --- Loop inside of $dir ---
+shopt -s nullglob                                                            #  : Use shopt -s nullglob. It will just print nothing if no files are found,
+                                                                             #  : otherwise it would literally just print "*.md", which we don't want.
+for file in "$dir"/*.md; do                                                  #  : A for loop inside of $dir to find all markdown files (Markdown1.md, etc).
+  echo "Found: $file"                                                        #  : Everytime such file is found, print "Found: $file". 
+done                                                                         #  : If no files are found, it would print, nothing.
+shopt -u nullglob                                                            #  : Now deactivate nullglob using shopt -u nullglob. s = SET, u = UNSET.
 
-echo; echo -e "${HEADER} How to use -z '\$VAR'${RESET}"; echo
-if [[ -z "$strEMPTY" ]]; then
-  echo "\$strEMPTY is, empty"
-fi
+echo; echo -e "${HEADER} How to use -z '\$VAR'${RESET}"; echo   # --- -z ---
+if [[ -z "$strEMPTY" ]]; then                                   # -z : Use this to check if $VAL IS empty. $strEmpty is being used for this example.
+  echo "\$strEMPTY is, empty"                                   # -z : It prints this message at (tl;8). if $strEmpty happened to be " " instead of "",
+fi                                                              # -z : this if statement would have been skipped.
 
-echo; echo -e "${HEADER} How to use -n '\$VAR'${RESET}"; echo
-if [[ -n "$str1" ]]; then
-  echo "\$str1 is, guess what, not empty: ${str1}"
-fi
+echo; echo -e "${HEADER} How to use -n '\$VAR'${RESET}"; echo   # --- -n ---
+if [[ -n "$str1" ]]; then                                       # -n : Use this to check if $VAL is NOT empty. $str1 is being
+  echo "\$str1 is, guess what, not empty: ${str1}"              # -n : used for this part. It prints the message (tl;8). 
+fi                                                              # -n : Otherwise do nothing.
 
-echo; echo -e "${HEADER} How to use ==${RESET}"; echo
-if [[ "$str1" == "$str2" ]]; then
-  echo "wait what-"
-else
-  echo "Oh no! $str1 != $str2"; echo "\$str1: $str1"; echo "\$str2: $str2"
-fi
+echo; echo -e "${HEADER} How to use ==${RESET}"; echo                       # --- == ---
+if [[ "$str1" == "$str2" ]]; then                                           # == : Use this for string comparisons. $str1 and $str2 are being used as examples.
+  echo "wait what-"                                                         # == : If $str2 happened to be "Hello", it would print the message (tl;8).
+else                                                                        # == :
+  echo "Oh no! $str1 != $str2"; echo "\$str1: $str1"; echo "\$str2: $str2"  # == : Now that they are NOT the same, this (tl;8) will be printed instead.
+fi                                                                          # == :
 
 # --- Arrays and Functions ---
+
 # 1. Arrays
 echo; echo -e "${HEADER} How to use arrays.${RESET}"; echo
 fruits=("apple" "Banana" "cherry")
@@ -151,6 +153,26 @@ greet_multi "James" "apples"; echo
 greet_multi "Alice" "mangoes"; echo
 greet_multi "dear" "your friends"; echo
 greet_multi "Diana" "... Cherries. Diana.. I am allergic to cherries."; echo
+
+# --- Parameter expansion ---
+# 1. Use default
+echo; echo -e "${HEADER} How to use default parameters for \$VAR.${RESET}"; echo
+echo "\$empty (with default): ${empty:-John}"
+echo "Actual \$empty: $empty"
+
+# 2. Assign default
+echo; echo -e "${HEADER} How to assing a default if \$VAR is empty.${RESET}"; echo
+V67=""
+echo "\$V67 before: $V67"
+echo "${V67:=Jake}"
+echo "Now \$V67 has the value Jake."
+
+echo
+
+V69="Rose"
+echo "\$V69 before: $V69"
+echo "${V69:=Jake}"
+echo "Notice how \$V69 still is Rose?"
 
 
 exit 0
