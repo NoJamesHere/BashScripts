@@ -86,7 +86,7 @@ echo; echo "B++ ; B:${numB}"                                 # $(() : be 3 inste
 
 dir=testfiles
 file=${dir}/testFile.txt
-content=$(cat $file)
+content=$(cat "$file" 2>/dev/null)
 str1=Hello
 str2=hello
 strEMPTY=""
@@ -124,6 +124,33 @@ if [[ "$str1" == "$str2" ]]; then
 else
   echo "Oh no! $str1 != $str2"; echo "\$str1: $str1"; echo "\$str2: $str2"
 fi
+
+# --- Arrays and Functions ---
+# 1. Arrays
+echo; echo -e "${HEADER} How to use arrays.${RESET}"; echo
+fruits=("apple" "Banana" "cherry")
+echo "First fruit: ${fruits[0]}"
+echo "All fruits: ${fruits[@]}"
+echo "Number of fruits: ${#fruits[@]}"
+
+# 2. Functions
+echo; echo -e "${HEADER} How to use functions.${RESET}"; echo
+greet() {
+  echo "Hello, $1!"
+}
+
+greet_multi() {
+  echo "Hello $1, you brought $2."
+}
+
+greet "James"; echo
+greet "Diana"; echo
+greet "$name"; echo
+
+greet_multi "James" "apples"; echo
+greet_multi "Alice" "mangoes"; echo
+greet_multi "dear" "your friends"; echo
+greet_multi "Diana" "... Cherries. Diana.. I am allergic to cherries."; echo
 
 
 exit 0
